@@ -17,14 +17,12 @@ const pizzaController = {
       });
   },
 
-  // get one pizza by id in the URL
-  getPizzaById({ params }, res) {
-    Pizza.findOne({ _id: params.id })
-      .populate({
-        path: "comments",
-        select: "-__v",
-      })
-      .select("-__v")
+  // update pizza by id
+  updatePizza({ params, body }, res) {
+    Pizza.findOneAndUpdate({ _id: params.id }, body, {
+      new: true,
+      runValidators: true,
+    })
       .then((dbPizzaData) => {
         if (!dbPizzaData) {
           res.status(404).json({ message: "No pizza found with this id!" });
@@ -32,10 +30,7 @@ const pizzaController = {
         }
         res.json(dbPizzaData);
       })
-      .catch((err) => {
-        console.log(err);
-        res.status(400).json(err);
-      });
+      .catch((err) => res.status(400).json(err));
   },
 
   // createPizza - POST /api/pizzas to add a pizza to the database
